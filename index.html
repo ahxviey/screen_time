@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Screen Activity Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/regression@2.0.1/dist/regression.min.js"></script>
+  <link rel="stylesheet" href="screentime.css">
+</head>
+<body onload="showDashboard()">
+
+  <header class="site-header">
+    <h1>SmartScreen Dashboard</h1>
+    <p>Your Personalized Screen Time Insights</p>
+  </header>
+  
+  <div class="topnav">
+    <div class="nav-left">
+      <a class="nav-link active" onclick="switchSection('dashboard', this)">Home</a>
+      <div class="dropdown">
+        <button class="dropbtn" onclick="toggleDropdown(this); switchSection('analytics', this)">Insights ▼</button>
+        <div class="dropdown-content">
+          <a href="#" onclick="showSubSection('descriptiveOutput')">Descriptive Analytics</a>
+          <a href="#" onclick="showSubSection('diagnosticOutput')">Diagnostic Analytics</a>
+          <a href="#" onclick="showSubSection('predictiveOutput')">Predictive Analytics</a>
+          <a href="#" onclick="showSubSection('prescriptiveOutput')">Prescriptive Analytics</a>
+        </div>
+      </div>
+      <a class="nav-link" onclick="switchSection('settings', this)">Preferences</a>
+    </div>
+  </div>
+  
+  <div id="dashboard" class="content active">
+    <div class="dashboard">
+      
+      <div class="card">
+        <h3>Daily Usage (Days)</h3>
+        <canvas id="lineChart"></canvas>
+      </div>
+  
+      <div class="card">
+        <h3>Activity Distribution</h3>
+        <canvas id="pieChart"></canvas>
+      </div>
+  
+      <div class="card">
+        <h3>Total Sessions</h3>
+        <h2 id="totalSessions">0</h2>
+      </div>
+  
+      <div class="card">
+        <h3>Active Rate</h3>
+        <h2 id="engagementRate">0%</h2>
+      </div>
+  
+      <div class="card">
+        <h3>New Joins</h3>
+        <h2 id="newUsers">0</h2>
+      </div>
+  
+      <div class="card">
+        <h3>Avg. Active Time</h3>
+        <h2 id="avgSession">00:00:00 </h2>
+      </div>
+  
+    </div>
+  </div>
+  
+  <div id="descriptiveOutput" class="content">
+    <div class="container">
+      <h2>Screen Time</h2>
+    
+      <!-- Wrap the form with <form> tag -->
+      <form id="analyticsForm">
+        <label>Age:</label>
+        <input type="number" id="age" min="1" required>
+    
+        <select id="gender" required>
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other / Prefer not to say</option>
+        </select>
+    
+        <select id="screen_time_type" required>
+          <option value="">Select Screen Time Type</option>
+          <option value="Educational">Educational</option>
+          <option value="Recreational">Recreational</option>
+          <option value="Total">Total</option>
+        </select>
+    
+        <select id="day_type" required>
+          <option value="">Select Day Type</option>
+          <option value="Weekday">Weekday</option>
+          <option value="Weekend">Weekend</option>
+        </select>
+    
+        <label>Average Screen Time (hours):</label>
+        <input type="number" id="average_screen_time" min="0" step="0.1" required>
+    
+        <label>Sample Size:</label>
+        <input type="number" id="sample_size" min="1" required>
+    
+        <button type="button" onclick="updateAnalytics()">Update Analytics</button>
+        <button type="button" onclick="saveDescriptiveData()">Ready for Recommendations</button>
+      </form>
+  
+      <p id="saveMessage" style="color: rgb(167, 23, 135); display: none;">
+        ✅ Info saved! Head to Recommendations for advice.
+      </p>
+    </div>
+  </div>
+  
+  
+
+  <div id="predictiveOutput" class="content">
+    <div class="container">
+      <h2>Predictive Analytics</h2>
+  
+      <!-- Canvas for the Weekday Prediction Graph -->
+      <canvas id="weekdayPredictionChart" class="prediction-chart"></canvas>
+  
+      <h3>Predictive Educational Screen Time (Weekdays, Age 16–20)</h3>
+      <table class="prediction-table">
+        <thead>
+          <tr>
+            <th>Age</th>
+            <th>Predicted Educational Screen Time (hours)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>16</td><td>1.80</td></tr>
+          <tr><td>17</td><td>1.88</td></tr>
+          <tr><td>18</td><td>1.96</td></tr>
+          <tr><td>19</td><td>2.04</td></tr>
+          <tr><td>20</td><td>2.12</td></tr>
+        </tbody>
+      </table>
+  
+      <p class="average-prediction">
+        <strong>Predicted Average Educational Screen Time (16–20 years old, weekdays): 1.96 hours</strong>
+      </p>
+  
+      <h3>Predictive Educational Screen Time (Weekends, Age 16–20)</h3>
+  
+      <!-- Canvas for the Weekend Prediction Graph -->
+      <canvas id="weekendPredictionChart" class="prediction-chart"></canvas>
+  
+      <table class="prediction-table">
+        <thead>
+          <tr>
+            <th>Age</th>
+            <th>Predicted Educational Screen Time (hours)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>16</td><td>2.34</td></tr>
+          <tr><td>17</td><td>2.44</td></tr>
+          <tr><td>18</td><td>2.55</td></tr>
+          <tr><td>19</td><td>2.65</td></tr>
+          <tr><td>20</td><td>2.76</td></tr>
+        </tbody>
+      </table>
+  
+      <p class="average-prediction">
+        <strong>Predicted Average Educational Screen Time (16–20 years old, weekends): 2.55 hours</strong>
+      </p>
+  
+      <!-- New Section: Predictive Recreational Screen Time -->
+      <h3>Predictive Recreational Screen Time (Weekdays, Age 16–20)</h3>
+  
+      <!-- Canvas for the Weekday Recreational Prediction Graph -->
+      <canvas id="weekdayRecreationPredictionChart" class="prediction-chart"></canvas>
+  
+      <table class="prediction-table">
+        <thead>
+          <tr>
+            <th>Age</th>
+            <th>Predicted Recreational Screen Time (hours)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>16</td><td>3.40</td></tr>
+          <tr><td>17</td><td>3.50</td></tr>
+          <tr><td>18</td><td>3.60</td></tr>
+          <tr><td>19</td><td>3.70</td></tr>
+          <tr><td>20</td><td>3.80</td></tr>
+        </tbody>
+      </table>
+  
+      <p class="average-prediction">
+        <strong>Predicted Average Recreational Screen Time (16–20 years old, weekdays): 3.60 hours</strong>
+      </p>
+  
+      <h3>Predictive Recreational Screen Time (Weekends, Age 16–20)</h3>
+  
+      <!-- Canvas for the Weekend Recreational Prediction Graph -->
+      <canvas id="weekendRecreationPredictionChart" class="prediction-chart"></canvas>
+  
+      <table class="prediction-table">
+        <thead>
+          <tr>
+            <th>Age</th>
+            <th>Predicted Recreational Screen Time (hours)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>16</td><td>4.00</td></tr>
+          <tr><td>17</td><td>4.10</td></tr>
+          <tr><td>18</td><td>4.20</td></tr>
+          <tr><td>19</td><td>4.30</td></tr>
+          <tr><td>20</td><td>4.40</td></tr>
+        </tbody>
+      </table>
+  
+      <p class="average-prediction">
+        <strong>Predicted Average Recreational Screen Time (16–20 years old, weekends): 4.20 hours</strong>
+      </p>
+  
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+        // Weekday Prediction Data
+        const weekdayPredictionData = {
+          labels: ['16', '17', '18', '19', '20'],
+          datasets: [{
+            label: 'Predicted Educational Screen Time (Weekdays)',
+            data: [1.80, 1.88, 1.96, 2.04, 2.12],
+            borderColor: '#4CAF50',
+            backgroundColor: 'rgba(76, 175, 80, 0.2)', 
+            borderWidth: 2,
+            fill: true
+          }]
+        };
+  
+        const weekdayConfig = {
+          type: 'line',
+          data: weekdayPredictionData,
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: {
+                callbacks: {
+                  label: function(tooltipItem) {
+                    return `${tooltipItem.raw} hours`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { title: { display: true, text: 'Age (16-20)' } },
+              y: { title: { display: true, text: 'Predicted Screen Time (hours)' }, min: 1.5, max: 2.5, ticks: { stepSize: 0.1 } }
+            }
+          }
+        };
+  
+        const weekdayPredictionChart = new Chart(document.getElementById('weekdayPredictionChart').getContext('2d'), weekdayConfig);
+  
+        // Weekend Prediction Data
+        const weekendPredictionData = {
+          labels: ['16', '17', '18', '19', '20'],
+          datasets: [{
+            label: 'Predicted Educational Screen Time (Weekends)',
+            data: [2.34, 2.44, 2.55, 2.65, 2.76],
+            borderColor: '#FF9800',
+            backgroundColor: 'rgba(255, 152, 0, 0.2)', 
+            borderWidth: 2,
+            fill: true
+          }]
+        };
+  
+        const weekendConfig = {
+          type: 'line',
+          data: weekendPredictionData,
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: {
+                callbacks: {
+                  label: function(tooltipItem) {
+                    return `${tooltipItem.raw} hours`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { title: { display: true, text: 'Age (16-20)' } },
+              y: { title: { display: true, text: 'Predicted Screen Time (hours)' }, min: 2, max: 3, ticks: { stepSize: 0.1 } }
+            }
+          }
+        };
+  
+        const weekendPredictionChart = new Chart(document.getElementById('weekendPredictionChart').getContext('2d'), weekendConfig);
+  
+        // Weekday Recreational Prediction Data
+        const weekdayRecreationPredictionData = {
+          labels: ['16', '17', '18', '19', '20'],
+          datasets: [{
+            label: 'Predicted Recreational Screen Time (Weekdays)',
+            data: [3.40, 3.50, 3.60, 3.70, 3.80],
+            borderColor: '#2196F3', 
+            backgroundColor: 'rgba(33, 150, 243, 0.2)', 
+            borderWidth: 2,
+            fill: true
+          }]
+        };
+  
+        const weekdayRecreationConfig = {
+          type: 'line',
+          data: weekdayRecreationPredictionData,
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: {
+                callbacks: {
+                  label: function(tooltipItem) {
+                    return `${tooltipItem.raw} hours`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { title: { display: true, text: 'Age (16-20)' } },
+              y: { title: { display: true, text: 'Predicted Screen Time (hours)' }, min: 3, max: 4, ticks: { stepSize: 0.1 } }
+            }
+          }
+        };
+  
+        const weekdayRecreationPredictionChart = new Chart(document.getElementById('weekdayRecreationPredictionChart').getContext('2d'), weekdayRecreationConfig);
+  
+        // Weekend Recreational Prediction Data
+        const weekendRecreationPredictionData = {
+          labels: ['16', '17', '18', '19', '20'],
+          datasets: [{
+            label: 'Predicted Recreational Screen Time (Weekends)',
+            data: [4.00, 4.10, 4.20, 4.30, 4.40],
+            borderColor: '#FF5722',
+            backgroundColor: 'rgba(255, 87, 34, 0.2)', 
+            borderWidth: 2,
+            fill: true
+          }]
+        };
+  
+        const weekendRecreationConfig = {
+          type: 'line',
+          data: weekendRecreationPredictionData,
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: {
+                callbacks: {
+                  label: function(tooltipItem) {
+                    return `${tooltipItem.raw} hours`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { title: { display: true, text: 'Age (16-20)' } },
+              y: { title: { display: true, text: 'Predicted Screen Time (hours)' }, min: 4, max: 5, ticks: { stepSize: 0.1 } }
+            }
+          }
+        };
+  
+        const weekendRecreationPredictionChart = new Chart(document.getElementById('weekendRecreationPredictionChart').getContext('2d'), weekendRecreationConfig);
+  
+      </script>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const baseAt15 = (1.87 + 1.96 + 1.34) / 3; // 1.723
+  const yearlyIncrease = 0.08;
+
+  const ages = [16, 17, 18, 19, 20];
+  const predictedHours = ages.map(age => baseAt15 + (age - 15) * yearlyIncrease);
+
+  function displayPrediction() {
+    const total = predictedHours.reduce((sum, h) => sum + h, 0);
+    const average = total / predictedHours.length;
+    document.getElementById('predictedTime').textContent = 
+      `Predicted Average Educational Screen Time for 16–20 years old (Weekdays): ${average.toFixed(2)} hours`;
+  }
+
+  function drawChart() {
+    const ctx = document.getElementById('predictionChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ages,
+        datasets: [{
+          label: 'Predicted Educational Screen Time (hours)',
+          data: predictedHours,
+          borderColor: '#4CAF50',
+          backgroundColor: 'rgba(76, 175, 80, 0.2)',
+          fill: true,
+          tension: 0.3,
+          pointBackgroundColor: '#4CAF50'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Hours'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Age (years)'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  }
+
+  window.onload = function() {
+    displayPrediction();
+    drawChart();
+  };
+</script>
+
+<div id="prescriptiveOutput" class="content">
+  <div class="container">
+    <h2>Prescriptive Analytics</h2>
+    <button onclick="generateSuggestions()">Generate AI Suggestions</button>
+    <div id="suggestionsResult" style="margin-top: 20px; font-size: 16px; background: #fff0f5; padding: 15px; border-radius: 10px; color: #333;"></div>
+  </div>
+</div>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.content').forEach(section => {
+      section.classList.remove('active');
+    });
+    document.getElementById(id).classList.add('active');
+  }
+
+  function saveDescriptiveData() {
+  const age = parseInt(document.getElementById('age').value) || 0;
+  const gender = document.getElementById('gender').value;
+  const screenTimeType = document.getElementById('screen_time_type').value;
+  const dayType = document.getElementById('day_type').value;
+  const avgScreenTime = parseFloat(document.getElementById('average_screen_time').value) || 0;
+  const sampleSize = parseInt(document.getElementById('sample_size').value) || 0;
+
+  localStorage.setItem('age', age);
+  localStorage.setItem('gender', gender);
+  localStorage.setItem('screenTimeType', screenTimeType);
+  localStorage.setItem('dayType', dayType);
+  localStorage.setItem('averageScreenTime', avgScreenTime);
+  localStorage.setItem('sampleSize', sampleSize);
+
+    document.getElementById('saveMessage').style.display = 'block';
+
+    showSection('prescriptiveOutput');
+    generateSuggestions(); // Call it directly after saving!
+  }
+
+  function generateSuggestions() {
+    const age = parseFloat(localStorage.getItem('age')) || 0;
+    const study = parseFloat(localStorage.getItem('studies')) || 0;
+    const social = parseFloat(localStorage.getItem('social')) || 0;
+    const gaming = parseFloat(localStorage.getItem('games')) || 0;
+
+    let suggestions = '';
+
+    if (age > 0 && age < 5) {
+      suggestions += "🧒 Since you're under 5, try to balance your screen time with outdoor activities and enough sleep.<br>";
+    } else if (age >= 6 && age <= 10) {
+      suggestions += "👩‍🎓 As a young kid, maintaining discipline in screen habits is crucial for productivity and mental health.<br>";
+    } else if (age > 15) {
+      suggestions += "🧑‍💼 Consider minimizing unnecessary screen time to reduce stress and fatigue.<br>";
+    }
+
+    if (study < 2) {
+      suggestions += "📘 You should increase study time to at least 3 hours per day.<br>";
+    } else {
+      suggestions += "✅ Your study time looks good!<br>";
+    }
+
+    if (social > 4) {
+      suggestions += "📵 Reduce social media use to under 3 hours/day for better mental focus.<br>";
+    }
+
+    if (gaming > 2) {
+      suggestions += "🎮 Try cutting gaming time below 2 hours/day to avoid fatigue.<br>";
+    }
+
+    if (study >= 2 && social <= 4 && gaming <= 2) {
+      suggestions = "🌟 You're maintaining a great screen time balance. Keep it up!";
+    }
+
+    document.getElementById('suggestionsResult').innerHTML = suggestions;
+  }
+</script>
+
+<div id="settings" class="content">
+  <div class="container">
+    <h2>Preferences</h2>
+
+    <label for="theme">Choose Appearance:</label>
+    <select id="theme" onchange="updateTheme()">
+      <option value="light">Light Mode</option>
+      <option value="dark">Dark Mode</option>
+    </select>
+
+    <h3>User Settings</h3>
+
+    <label for="email">User Email:</label>
+    <input type="email" id="email" placeholder="Enter your email">
+
+    <label for="password">New Password:</label>
+    <input type="password" id="password" placeholder="Enter new password">
+
+    <button onclick="updateAccountSettings()">Apply Changes</button>
+
+    <div id="settingsMessage" style="margin-top:15px; color:green;"></div>
+  </div>
+</div>
+
+  </div>
+  <div id="diagnosticOutput" class="content">
+    <div class="container">
+      <button onclick="loadScreenTimeData()">📊 View All Screen Time Records</button>
+      <div id="screenTimeTable"></div>
+  
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+  window.loadScreenTimeData = async function () {
+    try {
+      const response = await fetch('http://localhost:3000/getScreenTimeData');
+      const data = await response.json();
+
+      if (!Array.isArray(data) || data.length === 0) {
+        document.getElementById('screenTimeTable').innerHTML = 'No data found.';
+        return;
+      }
+
+      let tableHTML = `
+        <table border="1" cellpadding="10" cellspacing="4">
+          <thead>
+            <tr>
+              <th>Age</th>
+              <th>Gender</th>
+              <th>Screen Time Type</th>
+              <th>Day Type</th>
+              <th>Average Screen Time (hrs)</th>
+              <th>Sample Size</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      data.forEach(row => {
+        tableHTML += `
+          <tr>
+            <td>${row.Age}</td>
+            <td>${row.Gender}</td>
+            <td>${row["Screen Time Type"]}</td>
+            <td>${row["Day Type"]}</td>
+            <td>${row["Average Screen Time (hours)"]}</td>
+            <td>${row["Sample Size"]}</td>
+            <td>
+              <button onclick='editRow(${JSON.stringify(row)})'>✏️ Edit</button>
+              <button onclick='deleteRow(${row.id})'>🗑️ Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `</tbody></table>`;
+      document.getElementById('screenTimeTable').innerHTML = tableHTML;
+
+    } catch (error) {
+      console.error('Error loading data:', error);
+      document.getElementById('screenTimeTable').innerHTML = 'Failed to load data.';
+    }
+  };
+
+  // Fill form with selected row data for editing
+  let currentEditId = null;
+
+  window.editRow = function (row) {
+    currentEditId = row.id;
+
+    document.getElementById('age').value = row.Age;
+    document.getElementById('gender').value = row.Gender;
+    document.getElementById('screen_time_type').value = row['Screen Time Type'];
+    document.getElementById('day_type').value = row['Day Type'];
+    document.getElementById('average_screen_time').value = row['Average Screen Time (hours)'];
+    document.getElementById('sample_size').value = row['Sample Size'];
+
+    alert('Fields populated. Now click "Update Analytics".');
+    switchSection('descriptiveOutput');
+  };
+
+  // Delete selected row using ID
+  window.deleteRow = async function (id) {
+    const confirmDelete = confirm(`Are you sure you want to delete entry ID ${id}?`);
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/deleteScreenTime/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        alert('Data deleted successfully!');
+        loadScreenTimeData(); // Refresh table after delete
+      } else {
+        alert('Failed to delete data');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Error occurred while deleting');
+    }
+  };
+  
+  window.updateAnalytics = async function () {
+  const age = document.getElementById("age").value;
+  const gender = document.getElementById("gender").value;
+  const screenTimeType = document.getElementById("screen_time_type").value;
+  const dayType = document.getElementById("day_type").value;
+  const avgScreenTime = parseFloat(document.getElementById("average_screen_time").value) || 0;
+  const sampleSize = parseInt(document.getElementById("sample_size").value) || 0;
+
+  // Validate input
+  if (!age || !gender || !screenTimeType || !dayType || isNaN(avgScreenTime) || sampleSize <= 0) {
+    alert("Please fill in all required fields correctly.");
+    return;
+  }
+
+  // Reset form fields after validation
+  document.getElementById("analyticsForm").reset();
+
+  let totalEducational = 0;
+  let totalRecreational = 0;
+
+  // Handle different screen time types
+  switch (screenTimeType.toLowerCase()) {
+    case 'educational':
+      totalEducational = avgScreenTime * sampleSize;
+      break;
+    case 'recreational':
+      totalRecreational = avgScreenTime * sampleSize;
+      break;
+    case 'total':
+      totalEducational = (avgScreenTime * sampleSize) / 2;
+      totalRecreational = (avgScreenTime * sampleSize) / 2;
+      break;
+    default:
+      alert('Invalid screen time type selected.');
+      return;
+  }
+
+  // Calculating totals and session duration
+  const total = totalEducational + totalRecreational;
+  const avgSessionDuration = (avgScreenTime * 60); // Convert hours to minutes
+  const newUsers = Math.floor(total / 2); // New users calculation (assuming some logic here)
+  const engagementRate = ((avgScreenTime / 24) * 100).toFixed(1); // Engagement rate as percentage
+
+  // Update UI with calculated values
+  document.getElementById("totalSessions").innerText = total;
+  document.getElementById("avgSession").innerText = formatDuration(avgSessionDuration);
+  document.getElementById("engagementRate").innerText = `${engagementRate}%`;
+  document.getElementById("newUsers").innerText = newUsers;
+
+  // Update charts with the calculated data
+  pieChartInstance.data.labels = ['Educational', 'Recreational', 'Total'];
+  pieChartInstance.data.datasets[0].data = [totalEducational, totalRecreational, total];
+  pieChartInstance.update();
+
+  lineChartInstance.data.datasets[0].data = [totalEducational, totalRecreational, 0, 0, 0, 0, 0];
+  lineChartInstance.update();
+
+  // Prepare data to send to the backend (for update or insert)
+  const payload = {
+    age,
+    gender,
+    screen_time_type: screenTimeType,
+    day_type: dayType,
+    average_screen_time: avgScreenTime,
+    sample_size: sampleSize
+  };
+
+  try {
+    if (window.currentEditId) {
+      // Update existing record in the backend
+      const response = await fetch(`http://localhost:3000/updateScreenTime/${window.currentEditId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("Record updated successfully.");
+      } else {
+        alert("Failed to update data.");
+      }
+
+      window.currentEditId = null; // Reset edit mode after update
+    } else {
+      // Insert new record if no currentEditId exists
+      const response = await fetch("http://localhost:3000/update-analytics", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("New data inserted successfully.");
+      } else {
+        alert("Failed to insert data.");
+      }
+    }
+
+    // Reload screen time data and reset form fields
+    loadScreenTimeData();
+    switchSection('dashboard'); // Switch to the dashboard or any section you desire
+
+  } catch (error) {
+    console.error("Error updating analytics:", error);
+    alert("An error occurred. Check the console for details.");
+  }
+
+};
+      });
+
+
+      </script>
+
+  
+   
+    </script>
+    
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <h3>1. Educational Average Hours: Weekdays vs Weekends</h3>
+              <th>Day Type</th>
+              <th>Average Educational Hours</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Weekdays</td>
+              <td>1.33</td>
+            </tr>
+            <tr>
+              <td>Weekends</td>
+              <td>0.95</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Students spend more time on educational activities during weekdays (1.33 hrs) than weekends (0.95 hrs), reflecting a noticeable drop in academic engagement over the weekend. This trend can help inform efforts to encourage balanced learning habits throughout the week.</p>
+
+        <h3>2. Educational vs Recreational by Age Group</h3>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Age Group</th>
+              <th>Average Hours on Educational</th>
+              <th>Average Hours on Recreational</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>5–7</td>
+              <td>0.67</td>
+              <td>1.83</td>
+            </tr>
+            <tr>
+              <td>8–11</td>
+              <td>1.32</td>
+              <td>3.34</td>
+            </tr>
+            <tr>
+              <td>12–15</td>
+              <td>1.87</td>
+              <td>5.21</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Recreational screen time steadily increases with age, while educational use also rises moderately. Adolescents (12–15) spend nearly three times more hours on recreational content than on educational, highlighting the need to rebalance digital habits in this group.</p>
+        
+  
+        <h3>3. Total Average Screen Time of Girls and Boys during Weekends</h3>
+<table class="styled-table">
+  <thead>
+    <tr>
+      <th>Gender</th>
+      <th>Total Average Screen Time during weekends (hours)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Girls</td>
+      <td>4.55</td>
+    </tr>
+    <tr>
+      <td>Boys</td>
+      <td>5.24</td>
+    </tr>
+    <tr>
+      <td>Other / Prefer not to say</td>
+      <td>4.91</td>
+    </tr>
+  </tbody>
+</table>
+<p>"Across all genders, weekend screen time averages remain significantly high, with girls and boys averaging over 6 hours. This highlights the growing digital engagement during weekends and emphasizes the importance of guiding healthy screen habits.</p>
+
+        
+        <h3>4. Total Average Screen Time of Girls and Boys during Weekdays</h3>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Gender</th>
+              <th>Total Average Screen Time during weekdays</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Girls</td>
+              <td>5.5</td>
+            </tr>
+            <tr>
+              <td>Boys</td>
+              <td>3.8</td>
+            </tr>
+            <tr>
+              <td>Other Prefer not to say</td>
+              <td>1.2</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Girsl dominate screen time across all Gender groups, underscoring the need to focus digital habits on this device.</p>
+        <h3>5. Educational Hours vs Screen Time Correlation</h3>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Age Group</th>
+              <th>Educational Hours (avg)</th>
+              <th>Screen Time (avg)</th>
+              <th>Correlation Factor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>13–17</td>
+              <td>1.4</td>
+              <td>6.5</td>
+              <td>-0.41</td>
+            </tr>
+            <tr>
+              <td>18–22</td>
+              <td>1.1</td>
+              <td>6.9</td>
+              <td>-0.36</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The moderate negative correlation indicates that increased screen time tends to be associated with lower educational engagement, particularly among older teens and young adults. This highlights the importance of digital discipline in academic routines.</p>
+      </div>
+    </div>
+    
+    
+
+<script>
+
+
+
+function displayData() {
+  const tableBody = document.getElementById('screenTimeTable').getElementsByTagName('tbody')[0];
+  screentimeData.forEach(row => {
+    const newRow = tableBody.insertRow();
+    newRow.insertCell(0).textContent = row.age;
+    newRow.insertCell(1).textContent = row.gender;
+    newRow.insertCell(2).textContent = row.screen_time_type;
+    newRow.insertCell(3).textContent = row.day_type;
+    newRow.insertCell(4).textContent = row.average_screen_time;
+    newRow.insertCell(5).textContent = row.sample_size;
+  });
+
+}
+displayData();
+</script>
+
+
+  <script>
+  function updateAnalytics() {
+  const age = document.getElementById('age').value;
+  const gender = document.getElementById('gender').value;
+  const screenTimeType = document.getElementById('screen_time_type').value;
+  const dayType = document.getElementById('day_type').value;
+  const averageScreenTime = document.getElementById('average_screen_time').value;
+  const sampleSize = document.getElementById('sample_size').value;
+
+  // Example: Immediately call this when the page loads to show sample charts
+  initializeCharts();
+
+  // Send the updated data to the backend (Node.js)
+  fetch('/update-analytics', { // This is the endpoint where the backend will handle the update
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      age,
+      gender,
+      screenTimeType,
+      dayType,
+      averageScreenTime,
+      sampleSize,
+    }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Handle successful database update
+    if (data.success) {
+      // Update the dashboard based on the updated data
+      updateDashboard(age, gender, screenTimeType, dayType, averageScreenTime, sampleSize);
+      switchSection('dashboard');
+      alert('Analytics updated successfully!');
+    } else {
+      alert('Failed to update analytics.');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while updating the analytics.');
+  });
+}
+
+function updateDashboard(age, gender, screenTimeType, dayType, averageScreenTime, sampleSize) {
+  const totalSessions = calculateTotalSessions(averageScreenTime, sampleSize);
+  document.getElementById('totalSessions').textContent = totalSessions;
+  document.getElementById('avgSession').textContent = formatTime(totalSessions);
+  updateCharts(averageScreenTime, sampleSize, dayType);
+}
+
+
+function saveDescriptiveData() {
+  const age = document.getElementById('age').value;
+  const gender = document.getElementById('gender').value;
+  const screenTimeType = document.getElementById('screen_time_type').value;
+  const dayType = document.getElementById('day_type').value;
+  const averageScreenTime = document.getElementById('average_screen_time').value;
+  const sampleSize = document.getElementById('sample_size').value;
+
+  localStorage.setItem('age', age);
+  localStorage.setItem('gender', gender);
+  localStorage.setItem('screenTimeType', screenTimeType);
+  localStorage.setItem('dayType', dayType);
+  localStorage.setItem('averageScreenTime', averageScreenTime);
+  localStorage.setItem('sampleSize', sampleSize);
+
+  // Show message
+  document.getElementById('saveMessage').style.display = 'block';
+
+  // Navigate to Prescriptive Analytics section
+  switchSection('prescriptiveOutput');
+  generateSuggestions();
+}
+
+
+
+    function formatTime(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${hours}:${minutes}:${secs}`;
+    }
+
+    function hideAllSections() {
+            let sections = document.querySelectorAll('.content');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+        }
+
+    function switchSection(sectionId) {
+      document.querySelectorAll('.content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(sectionId).classList.add('active');
+    }
+
+    function showSubSection(subSectionId) {
+      document.querySelectorAll('.content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(subSectionId).classList.add('active');
+    }
+
+    function toggleDropdown(button) {
+      const dropdownContent = button.nextElementSibling;
+      dropdownContent.classList.toggle('show');
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+          dropdown.classList.remove('show');
+        });
+      }
+    }
+
+    function updateTheme() {
+  const selectedTheme = document.getElementById('theme').value;
+
+  if (selectedTheme === 'dark') {
+    document.body.style.backgroundColor = '#333';
+    document.body.style.color = '#fff';
+  } else {
+    document.body.style.backgroundColor = '#fff';
+    document.body.style.color = '#000';
+  }
+
+  // Optional: Save user's theme choice to localStorage
+  localStorage.setItem('preferredTheme', selectedTheme);
+}
+fetch('server.js')
+  .then(response => response.json())
+  .then(data => {
+    console.log("Data from database:", data);  // Check in browser console
+  })
+  .catch(error => console.error("Fetch error:", error));
+
+  
+
+function updateAccountSettings() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  if (!email || !password) {
+    document.getElementById('settingsMessage').textContent = "Please fill in both fields.";
+    document.getElementById('settingsMessage').style.color = 'red';
+    return;
+  }
+
+  // Example: You could save to localStorage (simulate saving account info)
+  localStorage.setItem('userEmail', email);
+  localStorage.setItem('userPassword', password); // Note: In real apps, NEVER save passwords like this!
+
+  document.getElementById('settingsMessage').textContent = "Settings updated successfully!";
+  document.getElementById('settingsMessage').style.color = 'green';
+
+  // Optional: Clear password input after saving
+  document.getElementById('password').value = '';
+}
+
+// Automatically apply saved theme when page loads
+window.onload = function() {
+  const savedTheme = localStorage.getItem('preferredTheme');
+  if (savedTheme) {
+    document.getElementById('theme').value = savedTheme;
+    updateTheme();
+  }
+};
+
+function switchSection(id, el) {
+  document.querySelectorAll('.content').forEach(e => e.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(e => e.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function showSubSection(id) {
+  switchSection(id);
+  document.querySelectorAll('.nav-link').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.dropbtn').forEach(e => e.classList.add('active'));
+}
+
+function toggleDropdown(el) {
+  el.classList.toggle('active');
+}
+
+function updateTheme() {
+  const theme = document.getElementById('theme').value;
+  document.body.style.backgroundColor = theme === 'dark' ? '#222' : '#f4f4f4';
+  document.body.style.color = theme === 'dark' ? '#fff' : '#000';
+}
+
+let lineChartInstance, pieChartInstance;
+
+function updateAnalytics() {
+  // Get user input
+  const avgScreenTime = parseFloat(document.getElementById("average_screen_time").value) || 0;
+  const sampleSize = parseInt(document.getElementById("sample_size").value) || 0;
+  const screenTimeType = document.getElementById("screen_time_type").value;
+
+  // Validate required input
+  if (!screenTimeType || sampleSize <= 0) {
+    alert("Please fill in all required fields correctly.");
+    return;
+  }
+
+  let totalEducational = 0;
+  let totalRecreational = 0;
+
+  // Assign values based on selected screen time type
+  switch (screenTimeType.toLowerCase()) {
+    case 'educational':
+      totalEducational = avgScreenTime * sampleSize;
+      break;
+    case 'recreational':
+      totalRecreational = avgScreenTime * sampleSize;
+      break;
+    case 'total':
+      // Split 50/50 for demonstration; adjust if needed
+      totalEducational = (avgScreenTime * sampleSize) / 2;
+      totalRecreational = (avgScreenTime * sampleSize) / 2;
+      break;
+    default:
+      alert('Invalid screen time type selected.');
+      return;
+  }
+
+  const total = totalEducational + totalRecreational;
+  const avgSessionDuration = (avgScreenTime * 60);  // Convert to minutes
+  const newUsers = Math.floor(total / 2);  // Example formula
+  const engagementRate = ((avgScreenTime / 24) * 100).toFixed(1);
+
+  // Update dashboard stats
+  document.getElementById("totalSessions").innerText = total;
+  document.getElementById("avgSession").innerText = formatDuration(avgSessionDuration);
+  document.getElementById("engagementRate").innerText = `${engagementRate}%`;
+  document.getElementById("newUsers").innerText = newUsers;
+
+  // Update pie chart
+  pieChartInstance.data.labels = ['Educational', 'Recreational', 'Total'];
+  pieChartInstance.data.datasets[0].data = [totalEducational, totalRecreational, total]; // Include total in pie chart
+  pieChartInstance.update();
+
+  // Update line chart (example data)
+  lineChartInstance.data.datasets[0].data = [totalEducational, totalRecreational, 0, 0, 0, 0, 0];
+  lineChartInstance.update();
+
+  // Navigate to Dashboard
+  switchSection('dashboard', document.querySelector('.nav-link[onclick*="dashboard"]'));
+
+  alert("Analytics updated!");
+}
+
+async function deleteEntry(id) {
+  try {
+    const response = await fetch(`http://localhost:3000/delete/${id}`, {
+      method: 'DELETE',
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      console.log("Deleting ID:", id);
+      loadScreenTimeData(); // Refresh the table or data
+    } else {
+      console.error('Delete failed:', data.message || data.error);
+    }
+  } catch (err) {
+    console.error('Request error:', err);
+  }
+}
+
+
+
+function formatDuration(minutes) {
+  const hrs = Math.floor(minutes / 60);
+  const mins = Math.floor(minutes % 60);
+  const secs = Math.floor((minutes * 60) % 60);
+  return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function hideAllSections() {
+  document.querySelectorAll('.content').forEach(section => {
+    section.classList.remove('active');
+  });
+}
+
+function showReports() {
+  hideAllSections();
+  document.getElementById('reports').classList.add('active');
+}
+
+function showSettings() {
+  hideAllSections();
+  document.getElementById('settings').classList.add('active');
+}
+
+async function loadScreenTimeData() {
+  try {
+    const response = await fetch('http://127.0.0.1:3000/getScreenTimeData');
+    const data = await response.json();
+    console.log("Screen Time Data:", data)
+    updateAnalytics(data);  // Pass the data to update the analytics
+  } catch (error) {
+    console.error('Error fetching screen time data:', error);
+  }
+}
+
+function createCharts() {
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  lineChartInstance = new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Sessions',
+        data: [2, 3, 1, 4, 3, 2, 1],  // Default data
+        borderColor: '#007bff',
+        fill: false
+      }]
+    }
+  });
+
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  pieChartInstance = new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: ['Educational', 'Recreational', 'Total'],  // Initialize with the correct categories
+      datasets: [{
+        data: [5,5,5],  // Default data, will be updated dynamically
+        backgroundColor: ['#93B1B5', '#4F7C82','#B8E3E9']
+      }]
+    }
+  });
+}
+
+window.onload = () => {
+  createCharts();
+  loadScreenTimeData(); // Preload data if needed
+};
+</script>
+
+</body>
+</html>

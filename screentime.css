@@ -1,0 +1,339 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background-color: #f5f7fb;
+    color: #333;
+    line-height: 1.6;
+}
+
+.site-header {
+    text-align: center;
+    background-image: url(background.png);
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 20px 10px;
+    margin-bottom: 20px;
+    border-radius: 0 0 5px 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 3em;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.site-header p {
+    margin-top: 15px;
+    font-size: 1.2em;
+    opacity: 0.9;
+    font-family:cursive;
+    font-weight: 300;
+}
+
+.topnav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffafcc;
+    padding: 16px 28px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.topnav:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+
+.nav-link, .dropbtn {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    padding: 10px 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 18px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover, .dropbtn:hover {
+    color: #ff0077;
+    background-color: rgba(255, 0, 119, 0.1);
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 38px;
+    left: 0;
+    background-color: white;
+    min-width: 220px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease-in-out;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dropdown-content a {
+    padding: 14px 20px;
+    display: block;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #f1f1f1;
+    transition: all 0.3s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: #f9f9f9;
+    color: #ff0077;
+}
+
+h1 {
+    padding: 20px 0;
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 70px;
+    background-color: #ffafcc;
+    padding: 30px;
+}
+
+.card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 4px 100px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card p {
+    font-size: 1.2rem;
+    color: #555;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+
+canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 350px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.container {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 25px;
+    background: #f7c8e3;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+label, select, input, button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 18px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+button {
+    background: #f72b79;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    font-weight: bold;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: #fa1e4e;
+    transform: translateY(-2px);
+}
+
+.content {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease-in-out;
+}
+
+.content.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 18px;
+    background-color: #f8f9fa;
+    margin-bottom: 40px;
+}
+
+.styled-table thead tr {
+    background-color: #ff6b81;
+    color: #ffffff;
+    text-align: left;
+    font-weight: bold;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 18px 24px;
+    border-bottom: 1px solid #ddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f9f9f9;
+}
+
+.styled-table tbody tr:hover {
+    background-color: #f1f1f1;
+    transition: background-color 0.3s ease;
+}
+
+.container h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: bold;
+}
+
+.container h3 {
+    color: #2c3e50;
+    margin-top: 40px;
+    font-size: 24px;
+}
+
+.container p {
+    font-size: 18px;
+    color: #555;
+    margin-top: 10px;
+    margin-bottom: 40px;
+    line-height: 1.8;
+}
+/* Style for the predictive section */
+#predictiveOutput .container {
+    text-align: center;
+  }
+  
+  .prediction-chart {
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  .prediction-text {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .prediction-table {
+    width: 80%;
+    margin: auto;
+    border-collapse: collapse;
+    text-align: center;
+  }
+  
+  .prediction-table th,
+  .prediction-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  .prediction-table thead {
+    background-color: #f2f2f2;
+  }
+  
+  .average-prediction {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: bold;
+  }
+  .prediction-table {
+    width: 80%;
+    margin: auto;
+    border-collapse: collapse;
+    text-align: center;
+  }
+
+  .prediction-table th,
+  .prediction-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+
+  .prediction-table thead {
+    background-color: #f2f2f2;
+  }
+
+  .average-prediction {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: bold;
+  }
+
+  .prediction-chart {
+    max-width: 600px;
+    margin: auto;
+  }
+
+  .prediction-text {
+    text-align: center;
+    margin-top: 1rem;
+  }
